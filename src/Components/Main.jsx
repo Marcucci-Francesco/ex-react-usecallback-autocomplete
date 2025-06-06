@@ -1,30 +1,29 @@
-import React from 'react'
-import { useState, useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import { debounce } from 'lodash'
 
 const Main = () => {
-
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-
+  const fetchProducts = async (search) => {
     if (!search.trim()) {
-      setProducts([])
-      return
+      setProducts([]);
+      return;
     }
-    (async () => {
-      try {
-        const res = await fetch(`http://localhost:3333/products?search=${search}`);
-        const data = await res.json();
-        setProducts(data);
-      } catch (err) {
-        console.error(err)
-      }
-    })();
+    try {
+      const res = await fetch(`http://localhost:3333/products?search=${search}`);
+      const data = await res.json();
+      setProducts(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-  }, [search])
+  const debouncedSearch = useCallback(debounce(fetchProducts, 500), []);
 
-
+  useEffect(() => {
+    debouncedSearch(search);
+  }, [search, debouncedSearch]);
 
   return (
     <div className='container m-4'>
@@ -42,7 +41,10 @@ const Main = () => {
             <p
               key={p.id}
               className="dropdown-item m-0"
-              onClick={() => setSearch(p.name)}
+              onClick={() => {
+                setSearch(p.name);
+                setProducts([]);
+              }}
               style={{ cursor: 'pointer' }}
             >
               {p.name}
@@ -51,7 +53,7 @@ const Main = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Main
+export default Main;
