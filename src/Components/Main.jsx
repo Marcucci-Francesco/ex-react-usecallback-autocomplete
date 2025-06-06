@@ -4,6 +4,7 @@ import { debounce } from 'lodash'
 const Main = () => {
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState([]);
+  const [selectProduct, setSelectProduct] = useState(null);
 
   const fetchProducts = async (search) => {
     if (!search.trim()) {
@@ -50,6 +51,14 @@ const Main = () => {
               {p.name}
             </p>
           ))}
+        </div>
+      )}
+      {selectProduct && (
+        <div className='card mt-4'>
+          <h2>{selectProduct.name}</h2>
+          <img src={selectProduct.image} alt={selectProduct.name} />
+          <p>{selectProduct.description}</p>
+          <p><strong>Price:</strong> {selectProduct.price}€</p>
         </div>
       )}
     </div>
